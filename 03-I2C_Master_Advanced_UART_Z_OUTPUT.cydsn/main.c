@@ -176,21 +176,77 @@ int main(void)
     else {
         UART_1_PutString("Error occurred during I2C read of LIS3DH_TEMP_CFG_REG\r\n"); 
     }    
-        uint8_t reg;
-        error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG4,
-                                            &reg);
-        if( error == NO_ERROR ) {
-            sprintf(message, "LIS3DH_??_REG: 0x%02X\r\n", reg);
-            UART_1_PutString(message); 
-        }
-        else {
-            UART_1_PutString("Error occurred during I2C comm to read LIS3DH_??_REG\r\n"); 
+    uint8_t reg;
+    error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG4,
+                                        &reg);
+    if( error == NO_ERROR ) {
+        sprintf(message, "LIS3DH_??_REG: 0x%02X\r\n", reg);
+        UART_1_PutString(message); 
     }
-        uint8_t TemperatureData[2];
-        uint16_t OutTemp;
+    else {
+        UART_1_PutString("Error occurred during I2C comm to read LIS3DH_??_REG\r\n"); 
+    }
+    uint8_t ctr_reg1;
+    
+    error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG1,
+                                        &ctr_reg1);
+    if( error == NO_ERROR ) {
+        sprintf(message, "LIS3DH_??_REG: 0x%02X\r\n", ctr_reg1);
+        UART_1_PutString(message); 
+    }
+    else {
+        UART_1_PutString("Error occurred during I2C comm to read LIS3DH_??_REG\r\n"); 
+    }
+    
+    ctr_reg1=0x54;
+    error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG1,ctr_reg1);
+    error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG1,&ctr_reg1);
+    
+    if( error == NO_ERROR ) {
+        sprintf(message, "LIS3DH_CTRL_REG1: 0x%02X\r\n", ctr_reg1);
+        UART_1_PutString(message); 
+    }
+    else {
+        UART_1_PutString("Error occurred during I2C comm to read LIS3DH_CTRL_REG1\r\n"); 
+    }    
+    
+    uint8_t ctrl_reg2;
+    
+    error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG2,
+                                        &ctrl_reg2);
+    if( error == NO_ERROR ) {
+        sprintf(message, "LIS3DH_CTRL_REG2: 0x%02X\r\n", ctrl_reg2);
+        UART_1_PutString(message); 
+    }
+    else {
+        UART_1_PutString("Error occurred during I2C comm to read LIS3DH_??_REG\r\n"); 
+    }
+    
+    
+    
+    
+    
+    ctrl_reg2=0x88;
+    error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG2,ctrl_reg2);
+    error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG2,&ctrl_reg2);
+    
+    if( error == NO_ERROR ) {
+        sprintf(message, "LIS3DH_CTRL_REG1: 0x%02X\r\n", ctrl_reg2);
+        UART_1_PutString(message); 
+    }
+    else {
+        UART_1_PutString("Error occurred during I2C comm to read LIS3DH_CTRL_REG1\r\n"); 
+    } 
+    
+    uint8_t TemperatureData[2];
+    uint16_t OutTemp;
+    
+    uint8_t out_z[2];
+    int16_t OUT_Z;
     for(;;)
     {
         CyDelay(100);
+        /*
         error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, 
                                         LIS3DH_OUT_ADC_3L, 
                                         &TemperatureData[0]);
@@ -204,6 +260,31 @@ int main(void)
         }
         else {
             UART_1_PutString("Error occurred during I2C comm to read LIS3DH_OUT_ADC_3L\r\n"); 
+        }
+        */
+        uint8_t status_reg;
+        error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, 
+                                        LIS3DH_STATUS_REG, 
+                                        &status_reg);
+        CyDelay(10);
+        uint8_t bit_mask=0x04;
+        if(status_reg&bit_mask){
+            error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, 
+                                LIS3DH_OUT_Z_L, 
+                                &out_z[0]);
+            error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, 
+                                LIS3DH_OUT_Z_H, 
+                                &out_z[1]); 
+        if(error == NO_ERROR) { 
+            OUT_Z = (int16_t)(out_z[0] | (out_z[1]<<8))>>6;
+            sprintf(message, "Z Output: %d\r\n", OUT_Z);
+            UART_1_PutString(message);
+        }
+        else {
+            UART_1_PutString("Error occurred during I2C comm to read LIS3DH_OUT_ADC_3L\r\n"); 
+        }            
+            
+            
         }
     }       
 

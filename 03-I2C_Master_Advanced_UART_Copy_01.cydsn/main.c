@@ -13,7 +13,7 @@
 #include "project.h"
 #include "../src_shared/I2C_Interface.h"
 #include "../src_shared/LIS3DH.h"
-
+#include "InterruptRoutines.h"
 // Set this to 1 to send byte data for the Bridge Control Panel
 // Otherwise set it to 0 to send temperature data as int16_t
 #define USE_BRIDGECONTROLPANEL  0
@@ -25,7 +25,7 @@ int main(void)
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
     I2C_Peripheral_Start();
     UART_1_Start();
-    
+    //isr_FIFO_StartEx(isr_FIFO_function);
     CyDelay(5); //"The boot procedure is complete about 5 ms after device power-up."
     
     // Check if LIS3DH is connected
@@ -145,7 +145,31 @@ int main(void)
     tmp_cfg_reg|=0x00;
     error=I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
                                         LIS3DH_TEMP_CFG_REG,
-                                        tmp_cfg_reg);
+                                        &tmp_cfg_reg);
+    error=I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS,
+                                        LIS3DH_TEMP_CFG_REG,
+                                        &tmp_cfg_reg);
+    if(error==NO_ERROR){
+        sprintf(message, "LIS3DH_TEMP_CFG_REG updated: 0x%02X\r\n", tmp_cfg_reg);
+        UART_1_PutString(message);
+    }
+    else{
+        UART_1_PutString("Error occurred\r\n");    
+    }
+    
+    
+    uint8_t reg;
+    error=I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_STATUS_REG, &reg);
+    
+    if (error == NO_ERROR) {
+        sprintf(message, "LIS3DH_STATUS_REG updated: 0x%02X\r\n", reg);
+        UART_1_PutString(message); 
+    }
+    else {
+        UART_1_PutString("Error occurred during I2C read of LIS3DH_STATUS_REG\r\n"); 
+  
+    }
+    
     /*   I2C Temperature CTRL REG 4 Reading from LIS3DH   */
     
     
@@ -164,50 +188,24 @@ int main(void)
     }    
     
     // TO DO...
-    tmp_cfg_reg |= 0xC0; // must be changed to the appropriate value
-    error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_TEMP_CFG_REG, 
-    tmp_cfg_reg);
-    error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_TEMP_CFG_REG, 
-    &tmp_cfg_reg);
-    if (error == NO_ERROR) {
-        sprintf(message, "LIS3DH_TEMP_CFG_REG updated: 0x%02X\r\n", tmp_cfg_reg);
-        UART_1_PutString(message); 
-    }
-    else {
-        UART_1_PutString("Error occurred during I2C read of LIS3DH_TEMP_CFG_REG\r\n"); 
-    }    
-        uint8_t reg;
-        error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_CTRL_REG4,
-                                            &reg);
-        if( error == NO_ERROR ) {
-            sprintf(message, "LIS3DH_??_REG: 0x%02X\r\n", reg);
-            UART_1_PutString(message); 
-        }
-        else {
-            UART_1_PutString("Error occurred during I2C comm to read LIS3DH_??_REG\r\n"); 
-    }
-        uint8_t TemperatureData[2];
-        uint16_t OutTemp;
+    uint8_t Z_output[2];
+    uint16_t out_z;
     for(;;)
     {
         CyDelay(100);
-        error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, 
-                                        LIS3DH_OUT_ADC_3L, 
-                                        &TemperatureData[0]);
-        error = I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, 
-                                        LIS3DH_OUT_ADC_3H, 
-                                        &TemperatureData[1]);
+        error=I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_OUT_Z_L, &Z_output[0]);
+        error=I2C_Peripheral_ReadRegister(LIS3DH_DEVICE_ADDRESS, LIS3DH_OUT_Z_L, &Z_output[1]);
+        
         if(error == NO_ERROR) { 
-            OutTemp = (int16_t)(TemperatureData[0] | (TemperatureData[1]<<8))>>6;
-            sprintf(message, "Temp Output: %d\r\n", OutTemp);
+            out_z = (int16_t)(Z_output[0] | (Z_output[1]<<8))>>6;
+            sprintf(message, "Z Output: %d\r\n", out_z);
             UART_1_PutString(message);
         }
         else {
             UART_1_PutString("Error occurred during I2C comm to read LIS3DH_OUT_ADC_3L\r\n"); 
         }
-    }       
-
     
+    }
 }
 
 /* [] END OF FILE */

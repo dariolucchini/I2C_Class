@@ -3,7 +3,7 @@
 <!--This file is machine generated and read. It is not intended to be edited by hand.-->
 <!--Due to this, there is no schema for this file.-->
 <CyGuid_2867d519-54d2-4c01-9830-c51cb08bc3dd type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWorkspaceSerialize" version="5" xml_contents_version="3" name="I2C_Class" persistent="I2C_Class.cywrk" platform="NOT_USED">
-<current_project name=".\02-I2C_Master_Read.cydsn\02-I2C_Master_Read.cyprj" />
+<current_project name=".\FIFO_UART_LIS3DH.cydsn\FIFO_UART_LIS3DH.cyprj" />
 <wrkspc_folders />
 <files />
 <projects>
@@ -12,6 +12,11 @@
 <v>.\02-I2C_Master_Write.cydsn\02-I2C_Master_Write.cyprj</v>
 <v>.\03-I2C_Master_Advanced.cydsn\03-I2C_Master_Advanced.cyprj</v>
 <v>.\03-I2C_Master_Advanced_UART.cydsn\03-I2C_Master_Advanced_UART.cyprj</v>
+<v>.\03-I2C_Master_Advanced_UART_Copy_01.cydsn\03-I2C_Master_Advanced_UART_Copy_01.cyprj</v>
+<v>.\03-I2C_Master_Advanced_UART_Z_OUTPUT.cydsn\03-I2C_Master_Advanced_UART_Z_OUTPUT.cyprj</v>
+<v>.\04-I2C_Master_Advanced_UART_XYZ_OUTPUT.cydsn\04-I2C_Master_Advanced_UART_XYZ_OUTPUT.cyprj</v>
+<v>.\04-I2C_Master_Advanced_UART_XYZ_INTERRUPT.cydsn\04-I2C_Master_Advanced_UART_XYZ_INTERRUPT.cyprj</v>
+<v>.\FIFO_UART_LIS3DH.cydsn\FIFO_UART_LIS3DH.cyprj</v>
 </projects>
 <workspace_id v="48a54300-2e4f-40b8-b762-4d9101ea0b93" />
 <WriteAppVersionLastSavedWith v="4.4.0.80" />
